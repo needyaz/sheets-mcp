@@ -8,6 +8,9 @@ import { getSpreadsheetInfo, listSheets, readSheet, updateSheet } from "./sheets
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
 const MCP_SECRET = process.env.MCP_SECRET;
 
+// MCP OAuth discovery — Claude.ai checks this before connecting.
+// We respond with an empty doc to signal "no auth required".
+
 // ---------------------------------------------------------------------------
 // MCP server factory — one server instance per HTTP session
 // ---------------------------------------------------------------------------
@@ -154,6 +157,12 @@ const sessions = new Map<string, StreamableHTTPServerTransport>();
 
 const mcpPath = MCP_SECRET ? `/mcp/${MCP_SECRET}` : "/mcp";
 console.log(`MCP path: ${mcpPath}`);
+
+// Claude.ai performs OAuth discovery before connecting.
+// Returning an empty object signals that no auth is required.
+app.get("/.well-known/oauth-authorization-server", (_req, res) => {
+  res.json({});
+});
 
 app.post(mcpPath, async (req, res) => {
   // Check if this is a new session (Initialize request) or existing
