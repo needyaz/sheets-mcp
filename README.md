@@ -32,7 +32,7 @@ For each spreadsheet you want Claude to access, share it with the service accoun
 
 #### Option A — Railway (recommended)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/new?template=https://github.com/YOUR_USERNAME/sheets-mcp)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/new?template=https://github.com/needyaz/sheets-mcp)
 
 1. Click the button above (after forking this repo to your GitHub account)
 2. Set these environment variables in Railway:
