@@ -191,7 +191,7 @@ app.post(mcpPath, async (req, res) => {
   const transport = sessionId ? sessions.get(sessionId) : undefined;
 
   if (!transport) {
-    res.status(400).json({ error: "No session found. Send an Initialize request first." });
+    res.status(404).json({ error: "Session not found or expired. Please re-initialize." });
     return;
   }
 
@@ -205,7 +205,7 @@ app.get(mcpPath, async (req, res) => {
   const transport = sessionId ? sessions.get(sessionId) : undefined;
 
   if (!transport) {
-    res.status(400).json({ error: "No session found." });
+    res.status(404).json({ error: "Session not found or expired. Please re-initialize." });
     return;
   }
 
