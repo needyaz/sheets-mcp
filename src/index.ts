@@ -165,6 +165,7 @@ app.get("/.well-known/oauth-authorization-server", (_req, res) => {
 });
 
 app.post(mcpPath, async (req, res) => {
+  console.log("POST", mcpPath, "| session:", req.headers["mcp-session-id"] ?? "none", "| body method:", req.body?.method ?? "(no body)", "| isInit:", isInitializeRequest(req.body));
   // Check if this is a new session (Initialize request) or existing
   if (isInitializeRequest(req.body)) {
     const transport = new StreamableHTTPServerTransport({
@@ -200,6 +201,7 @@ app.post(mcpPath, async (req, res) => {
 // SSE stream endpoint for server-to-client notifications
 app.get(mcpPath, async (req, res) => {
   const sessionId = req.headers["mcp-session-id"] as string | undefined;
+  console.log("GET", mcpPath, "| session:", sessionId ?? "none", "| sessions active:", sessions.size);
   const transport = sessionId ? sessions.get(sessionId) : undefined;
 
   if (!transport) {
