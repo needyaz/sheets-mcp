@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.json.key
+service-account-key.json
+*-key.json
+*-credentials.json
+test.mjs
