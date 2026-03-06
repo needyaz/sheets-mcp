@@ -32,10 +32,8 @@ For each spreadsheet you want Claude to access, share it with the service accoun
 
 #### Option A — Railway (recommended)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/new?template=https://github.com/needyaz/sheets-mcp)
-
-1. Click the button above (after forking this repo to your GitHub account)
-2. Set these environment variables in Railway:
+1. Go to [railway.app/new](https://railway.app/new) → **Deploy from GitHub repo** → select your fork of this repo
+2. Set these environment variables in Railway (Variables tab):
    - `GOOGLE_SERVICE_ACCOUNT_JSON` — paste the entire contents of your service account JSON key as a single line
    - `MCP_API_KEY` — a long random string (e.g. `openssl rand -hex 32`); this protects your server
 3. Railway gives you a public HTTPS URL — note it for the next step
