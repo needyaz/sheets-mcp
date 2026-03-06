@@ -6,27 +6,7 @@ import { z } from "zod";
 import { getSpreadsheetInfo, listSheets, readSheet, updateSheet } from "./sheets.js";
 
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
-const API_KEY = process.env.MCP_API_KEY; // optional auth
-
-// ---------------------------------------------------------------------------
-// Auth middleware (optional but recommended for public deployments)
-// ---------------------------------------------------------------------------
-function authMiddleware(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-): void {
-  if (!API_KEY) {
-    next();
-    return;
-  }
-  const provided = req.headers.authorization?.replace(/^Bearer\s+/i, "");
-  if (provided !== API_KEY) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  next();
-}
+const MCP_SECRET = process.env.MCP_SECRET;
 
 // ---------------------------------------------------------------------------
 // MCP server factory — one server instance per HTTP session
@@ -172,7 +152,10 @@ app.use(express.json());
 // Map of sessionId → transport for stateful connections
 const sessions = new Map<string, StreamableHTTPServerTransport>();
 
-app.post("/mcp", authMiddleware, async (req, res) => {
+const mcpPath = MCP_SECRET ? `/mcp/${MCP_SECRET}` : "/mcp";
+console.log(`MCP path: ${mcpPath}`);
+
+app.post(mcpPath, async (req, res) => {
   // Check if this is a new session (Initialize request) or existing
   if (isInitializeRequest(req.body)) {
     const transport = new StreamableHTTPServerTransport({
@@ -206,7 +189,7 @@ app.post("/mcp", authMiddleware, async (req, res) => {
 });
 
 // SSE stream endpoint for server-to-client notifications
-app.get("/mcp", authMiddleware, async (req, res) => {
+app.get(mcpPath, async (req, res) => {
   const sessionId = req.headers["mcp-session-id"] as string | undefined;
   const transport = sessionId ? sessions.get(sessionId) : undefined;
 
@@ -225,8 +208,8 @@ app.get("/health", (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`sheets-mcp listening on http://localhost:${PORT}`);
-  console.log(`MCP endpoint: http://localhost:${PORT}/mcp`);
-  if (!API_KEY) {
-    console.warn("Warning: MCP_API_KEY is not set. The server is unauthenticated.");
+  console.log(`MCP endpoint: http://localhost:${PORT}${mcpPath}`);
+  if (!MCP_SECRET) {
+    console.warn("Warning: MCP_SECRET is not set. The server is unauthenticated.");
   }
 });
